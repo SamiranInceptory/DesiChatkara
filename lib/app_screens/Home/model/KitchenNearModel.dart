@@ -1,5 +1,3 @@
-//KitchensNearResponseModel
-
 class KitchensNearResponseModel {
   List<Data> data;
   String message;
@@ -49,6 +47,7 @@ class Data {
   String availableFrom;
   String availableTo;
   String parentId;
+  String isAvailable;
   String totalNumberOfFeedback;
   String averageRating;
   double distance;
@@ -73,6 +72,7 @@ class Data {
         this.availableFrom,
         this.availableTo,
         this.parentId,
+        this.isAvailable,
         this.totalNumberOfFeedback,
         this.averageRating,
         this.distance});
@@ -97,6 +97,7 @@ class Data {
     availableFrom = json['available_from'];
     availableTo = json['available_to'];
     parentId = json['parent_id'];
+    isAvailable = json['is_available'];
     totalNumberOfFeedback = json['total_number_of_feedback'];
     averageRating = json['average_rating'];
     distance = json['distance'];
@@ -123,6 +124,7 @@ class Data {
     data['available_from'] = this.availableFrom;
     data['available_to'] = this.availableTo;
     data['parent_id'] = this.parentId;
+    data['is_available'] = this.isAvailable;
     data['total_number_of_feedback'] = this.totalNumberOfFeedback;
     data['average_rating'] = this.averageRating;
     data['distance'] = this.distance;

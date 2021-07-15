@@ -8,9 +8,11 @@ import 'package:desichatkara/app_screens/screens/SignUpLogin.dart';
 import 'package:desichatkara/constants.dart';
 import 'package:desichatkara/helper/api_response.dart';
 import 'package:desichatkara/utility/Error.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ApplyCoupon.dart';
@@ -27,6 +29,7 @@ class _CartState extends State<Cart> {
   SharedPreferences prefs;
   Map _body;
   Future<CartItemsDetailsModel> _cartApi;
+  Dio dio = new Dio();
 
   bool cartChangeCheck = false;
   String _userToken = "";
@@ -36,6 +39,9 @@ class _CartState extends State<Cart> {
   String user_id = "";
   // ignore: non_constant_identifier_names
   String coupon_code = "";
+  String vendorLat="";
+  String vendorLong="";
+  double _distance;
 
   @override
   void initState() {
@@ -43,12 +49,15 @@ class _CartState extends State<Cart> {
     _cartRepository = new CartRepository();
     _cartItemsUpdateBloc = CartItemsUpdateBloc();
     createSharedPref();
+
     // if(prefs.getString("cart_id")!="")
     // print("cartId at Cart page"+prefs.getString("cart_id"));
   }
 
   Future<void> managedSharedPref(CartItemsDetailsModel data) async {
     prefs.setString("Total_cart_amount", data.data.totalIncludingTaxDelivery);
+    // vendorLat=double.parse(data.data.cartItems[0].latitude);
+    // vendorLong=double.parse(data.data.cartItems[0].longitude);
     // cartId=data.data.cartItems[0].cartId;
   }
 
@@ -59,10 +68,39 @@ class _CartState extends State<Cart> {
     user_id = prefs.getString("user_id");
     _userToken = prefs.getString("user_token");
     coupon_code = prefs.getString("coupon_code");
+    vendorLat = prefs.getString("vendorLat");
+    vendorLong = prefs.getString("vendorLong");
 
     if (coupon_code == null) coupon_code = "";
+     //double distanceInMeters =Geolocator.distanceBetween(userLat, userLong, vendorLat, vendorLong);
+    //String _url="https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$userLat,$userLong&destinations=$vendorLat,$vendorLong&key=AIzaSyDdW5UgYTXsu3K93kAwx8evsYfqqRpuC6s";
+     //print(distanceInMeters);
+    Response response=await dio.get("https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$userLat,$userLong&destinations=$vendorLat,$vendorLong&key=AIzaSyDdW5UgYTXsu3K93kAwx8evsYfqqRpuC6s");
+    //print(response.data);
 
-    _body = {"cartid": cart_id, "userid": user_id, "coupon_code": coupon_code};
+    if (response.statusCode == 200) {
+     // final body = convert.jsonDecode(response.data);
+      var _results = response.data;
+      var _list = _results.values.toList();
+      var _list2=_list[2];
+      Map _results1 = _list2[0];
+      var _list1 = _results1.values.toList();
+
+      var _list4=_list1[0];
+      Map _results2 = _list4[0];
+      var _list3 = _results2.values.toList();
+      print(_list3[0]);
+
+      var _list6=_list3[0]["value"]/1000;
+
+      print(_list6);
+      _distance=_list6;
+      distanceP=_distance;
+      print(_distance);
+    }
+
+
+    _body = {"cartid": cart_id, "userid": user_id, "distance":_distance.toString(), "coupon_code": coupon_code};
     print("data cart");
     print(_body);
     _cartApi = _cartRepository.cartItemsDetails(_body);
@@ -219,7 +257,8 @@ class _CartState extends State<Cart> {
 
                                                     Map body = {
                                                       "cart_item_id": "${snapshot.data.data.cartItems[index].cartItemId}",
-                                                      "quantity": "$_quantity"
+                                                      "quantity": "$_quantity",
+                                                      "distance": "$_distance"
                                                     };
                                                     _cartItemsUpdateBloc.cartItemsUpdate(body);
                                                     setState(() {
@@ -246,7 +285,8 @@ class _CartState extends State<Cart> {
 
                                                     Map body = {
                                                       "cart_item_id": "${snapshot.data.data.cartItems[index].cartItemId}",
-                                                      "quantity": "$_quantity"
+                                                      "quantity": "$_quantity",
+                                                      "distance": "$_distance"
                                                     };
                                                     _cartItemsUpdateBloc.cartItemsUpdate(body);
                                                     setState(() {

@@ -116,6 +116,9 @@ class _FavoriteKitchensState extends State<FavoriteKitchens> {
                                                   address:snapshot.data.data[index].sku.vendor.address,
                                                 availableFrom: snapshot.data.data[index].sku.vendor.availableFrom,
                                                 availableTo: snapshot.data.data[index].sku.vendor.availableTo,
+                                                vendorLat: snapshot.data.data[index].sku.vendor.latitude,
+                                                vendorLong: snapshot.data.data[index].sku.vendor.longitude,
+                                                isAvailable: snapshot.data.data[index].sku.vendor.longitude,
 
 
                                               )),

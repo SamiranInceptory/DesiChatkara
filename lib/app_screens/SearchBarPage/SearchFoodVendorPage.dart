@@ -171,6 +171,9 @@ class _SearchFoodVendorPageState extends State<SearchFoodVendorPage> {
                                     address: _foodDetails.vendor[index].address,
                                     availableFrom: _foodDetails.vendor[index].availableFrom,
                                     availableTo: _foodDetails.vendor[index].availableTo,
+                                    vendorLat: _foodDetails.vendor[index].latitude,
+                                    vendorLong: _foodDetails.vendor[index].longitude,
+                                    isAvailable: _foodDetails.vendor[index].isAvailable,
 
                                   )),
 

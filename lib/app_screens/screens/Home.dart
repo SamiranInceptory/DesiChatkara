@@ -842,7 +842,7 @@ class _HomeState extends State<Home> {
                                                                   ),
                                                                 ),
                                                                 Text(
-                                                                  "${snapshot.data.data[index].couponCode}",
+                                                                  "${snapshot.data.data[index].couponCode}",overflow: TextOverflow.fade,
                                                                   style: TextStyle(color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.bold),
                                                                 ),
                                                               ],
@@ -1006,7 +1006,6 @@ class _HomeState extends State<Home> {
                       itemBuilder: (BuildContext ctxt, int index) {
 
                         restroIndex=(index-((index/vendorImages.length).floor()*vendorImages.length));
-
                         // double totalDistance = calculateDistance(
                         //     userLat,
                         //     userLong,
@@ -1018,10 +1017,8 @@ class _HomeState extends State<Home> {
                         //         : userLong);
                         // shopDistance.add(totalDistance);
 
-
-
                         return Visibility(
-                          visible: (availableRestroList[index].distance <= 8.0),
+                          visible: (availableRestroList[index].distance <= 10.0),
                           child: InkWell(
                             onTap: () {
                               // Navigator.push(context, MaterialPageRoute(builder: (context) => KitchenDetailedMenu(
@@ -1044,8 +1041,11 @@ class _HomeState extends State<Home> {
                                           vendorName: availableRestroList[index].shopName,
                                           availableFrom: availableRestroList[index].availableFrom,
                                           availableTo: availableRestroList[index].availableTo,
+                                          vendorLat: availableRestroList[index].latitude,
+                                          vendorLong: availableRestroList[index].longitude,
 
                                           address:availableRestroList[index].address,
+                                          isAvailable: availableRestroList[index].isAvailable,
 
 
                                         )),);
@@ -1195,7 +1195,8 @@ class _HomeState extends State<Home> {
                                                   color: Colors.grey[700]),
                                             ),
                                             Spacer(),
-                                            currentWidget(availableRestroList[index].availableFrom,availableRestroList[index].availableTo ),
+                                            //currentWidget(availableRestroList[index].availableFrom,availableRestroList[index].availableTo ),
+                                            opencloseShope(availableRestroList[index].isAvailable),
                                           ],
                                         )),
                                   ],
@@ -1420,6 +1421,22 @@ class _HomeState extends State<Home> {
       style: TextStyle(
           fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
     );
+  }
+
+  opencloseShope(String isAvailable) {
+    if(isAvailable=="1"){
+      return Text(
+        "Open Now",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
+      );
+    } else{
+      return Text(
+        "Close Now",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+      );
+    }
   }
 
 

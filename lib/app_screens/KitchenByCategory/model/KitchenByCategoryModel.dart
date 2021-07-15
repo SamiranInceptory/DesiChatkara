@@ -30,11 +30,11 @@ class KitchenByCategoryResponseModel {
 class Data {
   String productName;
   String productImage;
-  String manufacturerName;
+  Null manufacturerName;
   String categoryName;
   String productId;
   String categoryId;
-  String manufacturerId;
+  Null manufacturerId;
   String parentCategoryId;
   List<Vendor> vendor;
 
@@ -89,7 +89,7 @@ class Vendor {
   String mobileNumber;
   String mobileVerifiedFlag;
   String mobileVerifiedToken;
-  String mobileVerifiedAt;
+  Null mobileVerifiedAt;
   String address;
   String city;
   String state;
@@ -103,7 +103,8 @@ class Vendor {
   String availableFrom;
   String availableTo;
   String isActive;
-  String parentId;
+  Null parentId;
+  String isAvailable;
   String vendorId;
 
   Vendor(
@@ -127,6 +128,7 @@ class Vendor {
         this.availableTo,
         this.isActive,
         this.parentId,
+        this.isAvailable,
         this.vendorId});
 
   Vendor.fromJson(Map<String, dynamic> json) {
@@ -150,6 +152,7 @@ class Vendor {
     availableTo = json['available_to'];
     isActive = json['is_active'];
     parentId = json['parent_id'];
+    isAvailable = json['is_available'];
     vendorId = json['vendor_id'];
   }
 
@@ -175,6 +178,7 @@ class Vendor {
     data['available_to'] = this.availableTo;
     data['is_active'] = this.isActive;
     data['parent_id'] = this.parentId;
+    data['is_available'] = this.isAvailable;
     data['vendor_id'] = this.vendorId;
     return data;
   }

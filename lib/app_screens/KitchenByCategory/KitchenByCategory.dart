@@ -66,6 +66,9 @@ class _KitchenByCategoryState extends State<KitchenByCategory> {
                                          address: snapshot.data.data[index].vendor[index1].address,
                                        availableTo: snapshot.data.data[index].vendor[index1].availableTo,
                                        availableFrom: snapshot.data.data[index].vendor[index1].availableFrom,
+                                       vendorLat: snapshot.data.data[index].vendor[index1].latitude,
+                                       vendorLong: snapshot.data.data[index].vendor[index1].longitude,
+                                       isAvailable: snapshot.data.data[index].vendor[index1].isAvailable,
                                      )
                                  ),
                                );

@@ -12,7 +12,7 @@
         android:label="desichatkara"
         android:icon="@mipmap/ic_launcher">
          <meta-data android:name="com.google.android.geo.API_KEY"
-             android:value="AIzaSyC6hMR5kMX8Y5M0BgxCzZji81nhxf_uLmM"/>
+             android:value="AIzaSyDdW5UgYTXsu3K93kAwx8evsYfqqRpuC6s"/>
          <activity
              android:name=".MainActivity"
              android:launchMode="singleTop"

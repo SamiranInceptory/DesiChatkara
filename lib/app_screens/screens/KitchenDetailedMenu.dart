@@ -19,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:sticky_headers/sticky_headers.dart';
 import 'package:custom_switch/custom_switch.dart';
 import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
 
 class KitchenDetailedMenu extends StatefulWidget {
   final String vendorId;
@@ -27,6 +28,9 @@ class KitchenDetailedMenu extends StatefulWidget {
   final String address;
   final String availableFrom;
   final String availableTo;
+  final String vendorLat;
+  final String vendorLong;
+  final String isAvailable;
 
   const KitchenDetailedMenu(
       {Key key,
@@ -35,7 +39,7 @@ class KitchenDetailedMenu extends StatefulWidget {
       this.vendorName,
       this.address,
       this.availableFrom,
-      this.availableTo})
+      this.availableTo, this.vendorLat, this.vendorLong, this.isAvailable})
       : super(key: key);
 
   @override
@@ -64,6 +68,8 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
   List _moreLessVisibility = new List();
   List _circularProgressVisibility = new List();
   List _favCheck = new List();
+  Dio dio = new Dio();
+  double _distance;
 
   CartItemsAddBloc _cartItemsAddBloc;
   CartItemsUpdateBloc _cartItemsUpdateBloc;
@@ -107,10 +113,36 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
     _userToken = prefs.getString("user_token");
     _userId = prefs.getString("user_id");
     print("user iddd :  ${prefs.getString("user_id")}");
+
+    Response response=await dio.get("https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$userLat,$userLong&destinations=${widget.vendorLat},${widget.vendorLong}&key=AIzaSyDdW5UgYTXsu3K93kAwx8evsYfqqRpuC6s");
+    print(response.data);
+
+    if (response.statusCode == 200) {
+      // final body = convert.jsonDecode(response.data);
+      var _results = response.data;
+      var _list = _results.values.toList();
+      var _list2=_list[2];
+      Map _results1 = _list2[0];
+      var _list1 = _results1.values.toList();
+      var _list4=_list1[0];
+      Map _results2 = _list4[0];
+      var _list3 = _results2.values.toList();
+      print(_list3[0]);
+
+      var _list6=_list3[0]["value"]/1000;
+      _distance=_list6;
+      print(_distance);
+    }
+
     _foodDetailsFuture = _foodHomeRepository.foodDetails(
-        categoryId, vendorId, _cartId, _userId, _userToken);
+        categoryId, vendorId, _cartId, _userId, _distance, _userToken);
     currentVendorId = prefs.getString("vendor_id");
     currentCategoryId = prefs.getString("parent_category_id");
+    prefs.setString("vendorLat", widget.vendorLat);
+    prefs.setString("vendorLong", widget.vendorLong);
+
+
+
     setState(() {});
   }
 
@@ -314,7 +346,8 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
                           style: new TextStyle(
                               color: Colors.black, fontSize: 14.0),
                         ),
-                        currentWidget(),
+                        //currentWidget(),
+                        opencloseShope(),
                       ],
                     ),
                     // Padding(
@@ -975,27 +1008,31 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
                                                                                           body = {
                                                                                             "skuid": "${_productDetailsList[index0][index1].skus[index].id}",
                                                                                             "quantity": "${_productAmount[index0][index1][index]}",
-                                                                                            "cartid": prefs.getString("cart_id")
+                                                                                            "cartid": prefs.getString("cart_id"),
+                                                                                            "distance": "$_distance"
                                                                                           };
                                                                                         } else if (prefs.getString("user_id") != "") {
                                                                                           body = {
                                                                                             "skuid": "${_productDetailsList[index0][index1].skus[index].id}",
                                                                                             "quantity": "${_productAmount[index0][index1][index]}",
                                                                                             "userid": "${prefs.getString("user_id")}",
-                                                                                            "cartid": prefs.getString("cart_id")
+                                                                                            "cartid": prefs.getString("cart_id"),
+                                                                                            "distance": "$_distance"
                                                                                           };
                                                                                         }
                                                                                       } else if (prefs.getString("cart_id") == "") {
                                                                                         if (prefs.getString("user_id") == "") {
                                                                                           body = {
                                                                                             "skuid": "${_productDetailsList[index0][index1].skus[index].id}",
-                                                                                            "quantity": "${_productAmount[index0][index1][index]}"
+                                                                                            "quantity": "${_productAmount[index0][index1][index]}",
+                                                                                            "distance": "$_distance"
                                                                                           };
                                                                                         } else if (prefs.getString("user_id") != "") {
                                                                                           body = {
                                                                                             "skuid": "${_productDetailsList[index0][index1].skus[index].id}",
                                                                                             "quantity": "${_productAmount[index0][index1][index]}",
-                                                                                            "userid": "${prefs.getString("user_id")}"
+                                                                                            "userid": "${prefs.getString("user_id")}",
+                                                                                            "distance": "$_distance"
                                                                                           };
                                                                                         }
                                                                                       }
@@ -1059,7 +1096,8 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
                                                                                   });
                                                                                   Map body = {
                                                                                     "cart_item_id": "${_cartItemId[index0][index1][index]}",
-                                                                                    "quantity": "${_productAmount[index0][index1][index]}"
+                                                                                    "quantity": "${_productAmount[index0][index1][index]}",
+                                                                                    "distance": "$_distance"
                                                                                   };
                                                                                   print("BODY:" + body.toString());
                                                                                   _cartItemsUpdateBloc.cartItemsUpdate(body);
@@ -1089,7 +1127,8 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
                                                                                   });
                                                                                   Map body = {
                                                                                     "cart_item_id": "${_cartItemId[index0][index1][index]}",
-                                                                                    "quantity": "${_productAmount[index0][index1][index]}"
+                                                                                    "quantity": "${_productAmount[index0][index1][index]}",
+                                                                                    "distance": "$_distance"
                                                                                   };
                                                                                   print(_cartItemId[index0][index1][index]);
                                                                                   print("$index1 $index");
@@ -1262,6 +1301,23 @@ class _KitchenDetailedMenuState extends State<KitchenDetailedMenu> {
       }
   }
 
+  opencloseShope() {
+    if(widget.isAvailable=="1"){
+      shopOpen=true;
+      return Text(
+        "Open Now",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
+      );
+    } else{
+      shopOpen=false;
+      return Text(
+        "Close Now",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.red),
+      );
+    }
+  }
 
 
 }

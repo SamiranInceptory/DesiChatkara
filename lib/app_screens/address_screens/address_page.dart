@@ -49,6 +49,7 @@ class _AddressPageState extends State<AddressPage> {
   String coupon_code;
   Map body;
   SharedPreferences prefs;
+  //double _distance;
 
   Future<void> createSharedPref() async {
    prefs = await SharedPreferences.getInstance();
@@ -207,6 +208,7 @@ class _AddressPageState extends State<AddressPage> {
                             "payment_type":"$_paymentMode",
                             "coupon_code": coupon_code,
                             "order_remarks": _description.text.toString(),
+                            "distance":distanceP.toString()
 
                           };
                           _orderPlaceBloc.orderPlace(_body, userToken);
@@ -218,8 +220,6 @@ class _AddressPageState extends State<AddressPage> {
                               textColor: darkThemeRed,
                               toastLength: Toast.LENGTH_LONG);
                         }
-
-
                       },
                       child: Row(
                         children: [

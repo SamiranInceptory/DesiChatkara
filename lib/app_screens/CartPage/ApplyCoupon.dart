@@ -464,7 +464,7 @@ class _PromoCodePageState extends State<PromoCodePage> {
                                                                                 ),
                                                                               ),
                                                                               Text(
-                                                                                "${snapshot.data.data[index].couponCode}",
+                                                                                "${snapshot.data.data[index].couponCode}",overflow: TextOverflow.fade,
                                                                                 style: TextStyle(color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.bold),
                                                                               ),
                                                                             ],

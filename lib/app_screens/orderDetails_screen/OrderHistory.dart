@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:desichatkara/app_screens/orderDetails_screen/model/orderDetailsModel.dart';
 import 'package:desichatkara/app_screens/orderDetails_screen/repository/orderDetailsRepository.dart';
 import 'package:desichatkara/app_screens/screens/OrderDetails.dart';
@@ -24,6 +26,7 @@ class _OrderHistoryState extends State<OrderHistory> {
   Future<OrderDetailsModel> _orderDetailsApi;
   Map _body;
   var statusCol;
+  final ScrollController _scrollController = ScrollController();
 
   Future<void> createSharedPref() async {
     prefs = await SharedPreferences.getInstance();
@@ -34,11 +37,23 @@ class _OrderHistoryState extends State<OrderHistory> {
     _orderDetailsApi = _orderDetailsRepository.orderDetails(_body, userToken);
     setState(() {});
   }
+  //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  Future<void> _scrollToBottom() async {
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
     createSharedPref();
+    Timer.periodic(Duration(seconds: 2), (timer) {
+      if (mounted) {
+        _scrollToBottom();
+      } else {
+        timer.cancel();
+      }
+    });
   }
 
   @override
@@ -74,10 +89,12 @@ class _OrderHistoryState extends State<OrderHistory> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
-                    // physics: NeverScrollableScrollPhysics(),
-                    // shrinkWrap: true,
+
                     scrollDirection: Axis.vertical,
                     itemCount: snapshot.data.data.length,
+                    // controller: _scrollController,
+                    // reverse: true,
+                    shrinkWrap: true,
                     itemBuilder: (BuildContext ctxt, int index) {
                       if (snapshot.data.data[index].transactionStatus == "Failed") {
                         statusCol = Colors.red;
@@ -128,7 +145,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "ORDER ID : ${snapshot.data.data[index].id}",
+                                            "ORDER ID : ${snapshot.data.data[index].orderId}",
                                             style: new TextStyle(color: Colors.black, fontSize: 14.0),
                                           ),
                                           Padding(
